@@ -6,7 +6,7 @@ module input_rom (clock, address, q);
    reg [7:0] m[0:16383];
 
    initial begin
-      $readmemh("data/red-blood-cells_128x128.hex", m);
+      $readmemh("data/red-blood-cells_128x128-iverilog.hex", m);
    end
 
    assign q=m[address];
