@@ -85,6 +85,7 @@ module tb_box_filter;
     
     // finishedシグナルを待つ
     wait(finished == 1);
+    #20;
     $display("Box filter finished! Starting memory verification...");
     
     // 少し待ってからメモリ読み出し開始
