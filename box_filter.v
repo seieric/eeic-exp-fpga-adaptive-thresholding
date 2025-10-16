@@ -19,6 +19,8 @@ module box_filter #(
 );
   // 現在の位置
   reg [WIDTH_BITS+HEIGHT_BITS-1:0] pos; 
+  // 1クロック前の位置（メモリ書き込み用）
+  wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_pos = pos - 1;
   // カーネル内の位置 (0-8)
   // |0|1|2|
   // |3|4|5|
@@ -43,8 +45,8 @@ module box_filter #(
                 raw_iRow[HEIGHT_BITS-1:0];
 
   // 結果メモリの座標をposから計算
-  assign oResultCol = pos[WIDTH_BITS-1:0];
-  assign oResultRow = pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS];
+  assign oResultCol = write_pos[WIDTH_BITS-1:0];
+  assign oResultRow = write_pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS];
 
   reg [11:0] sum; // 最大でも255*9=2295なので12ビットで十分
 
