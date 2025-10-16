@@ -58,23 +58,25 @@ module box_filter #(
     end else begin
       oResultWren <= 0;
 
-      if (kpos < 9) begin
-        // カーネル内の現在のピクセルの値をsumに加える
-        sum <= sum + iImageData;
-        // カーネル内の次のピクセルへ移動
-        kpos <= kpos + 1;
-      end else begin
-        // sumを9で割って平均値を算出・メモリに書き込む
-        oResultData <= sum / 9;
-        oResultWren <= 1;
+      if (!finished) begin
+        if (kpos < 9) begin
+          // カーネル内の現在のピクセルの値をsumに加える
+          sum <= sum + iImageData;
+          // カーネル内の次のピクセルへ移動
+          kpos <= kpos + 1;
+        end else begin
+          // sumを9で割って平均値を算出・メモリに書き込む
+          oResultData <= sum / 9;
+          oResultWren <= 1;
 
-        // 次のピクセルへ移動
-        pos <= pos + 1;
-        kpos <= 0;
-        sum <= 0;
-        if (pos == (WIDTH * HEIGHT - 1)) begin
-          // 処理完了
-          finished <= 1;
+          // 次のピクセルへ移動
+          pos <= pos + 1;
+          kpos <= 0;
+          sum <= 0;
+          if (pos == (WIDTH * HEIGHT - 1)) begin
+            // 処理完了
+            finished <= 1;
+          end
         end
       end
     end
