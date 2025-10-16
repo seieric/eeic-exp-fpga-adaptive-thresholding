@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module tb_input_rom;
+module tb_threshold_rom;
     reg clk;
     reg [13:0] addr;
     wire [7:0] data;

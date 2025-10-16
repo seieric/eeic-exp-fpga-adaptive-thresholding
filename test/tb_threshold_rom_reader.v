@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module tb_input_rom_reader;
+module tb_threshold_rom_reader;
     reg clock;
     wire [6:0] iCol;
     wire [6:0] iRow;
