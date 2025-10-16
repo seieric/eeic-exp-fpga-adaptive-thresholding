@@ -2,8 +2,8 @@
 
 module tb_input_rom_reader;
     reg clock;
-    reg [7:0] iCol;
-    reg [7:0] iRow;
+    reg [6:0] iCol;
+    reg [6:0] iRow;
     wire [7:0] oData;
 
     input_rom_reader input_rom_reader0 (
