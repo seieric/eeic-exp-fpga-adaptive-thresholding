@@ -1,7 +1,7 @@
 // あらかじめ計算されたしきい値で二値化を行うモジュール
 module threshold #(
-  parameter WIDTH_BITS = 7,
-  parameter HEIGHT_BITS = 7,
+  parameter WIDTH_BITS = 8,
+  parameter HEIGHT_BITS = 8,
   parameter WIDTH = 2**WIDTH_BITS,
   parameter HEIGHT = 2**HEIGHT_BITS,
   parameter C = 2 // しきい値から引く定数

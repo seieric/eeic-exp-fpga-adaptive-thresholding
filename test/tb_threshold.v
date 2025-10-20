@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
 module tb_threshold;
-  parameter WIDTH_BITS = 7;
-  parameter HEIGHT_BITS = 7;
+  parameter WIDTH_BITS = 8;
+  parameter HEIGHT_BITS = 8;
   parameter WIDTH = 2**WIDTH_BITS;
   parameter HEIGHT = 2**HEIGHT_BITS;
 
@@ -63,32 +63,30 @@ module tb_threshold;
   initial clock = 0;
   always #5 clock = ~clock; // 10ns周期
 
-  // テストに必要な変数
-
-
   initial begin
     reset = 1;
     #20;
     reset = 0;
 
-    $display("Starting thresholding...");
+    // $display("Starting thresholding...");
     
     // finishedシグナルを待つ
     wait(finished == 1);
     #20;
-    $display("Thresholding finished!");
+    // $display("Thresholding finished!");
     $finish;
   end
 
   // finishedシグナルの立ち上がりを監視
-  always @(posedge finished) begin
-    $display("*** Thresholding processing completed at time %t ***", $time);
-  end
+  // always @(posedge finished) begin
+  //   $display("*** Thresholding processing completed at time %t ***", $time);
+  // end
 
   // 書き込み動作の監視
   always @(posedge clock) begin
     if (resultWren) begin
-      $display("Writing to [%3d,%3d]: %3d at time %t", resultCol, resultRow, resultData, $time);
+      // $display("Writing to [%3d,%3d]: %3d at time %t", resultCol, resultRow, resultData, $time);
+      $display("%d", resultData);
     end
   end
 
