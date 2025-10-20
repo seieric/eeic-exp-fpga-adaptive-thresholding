@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
 module tb_box_filter;
-  parameter WIDTH_BITS = 7;
-  parameter HEIGHT_BITS = 7;
+  parameter WIDTH_BITS = 8;
+  parameter HEIGHT_BITS = 8;
   parameter WIDTH = 2**WIDTH_BITS;
   parameter HEIGHT = 2**HEIGHT_BITS;
 

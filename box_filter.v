@@ -1,8 +1,8 @@
 // 画像にBox Filterを適用して平均値を計算するモジュール
 // カーネルは3x3に固定
 module box_filter #(
-  parameter WIDTH_BITS = 7,
-  parameter HEIGHT_BITS = 7,
+  parameter WIDTH_BITS = 8,
+  parameter HEIGHT_BITS = 8,
   parameter WIDTH = 2**WIDTH_BITS,
   parameter HEIGHT = 2**HEIGHT_BITS
 )(
