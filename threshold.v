@@ -25,7 +25,7 @@ module threshold #(
   wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_address = pos - 1;
 
   // メモリ書き込み終了フラグ
-  output reg write_finished;
+  reg write_finished;
 
   assign oImageCol = pos[WIDTH_BITS-1:0];
   assign oImageRow = pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS];
