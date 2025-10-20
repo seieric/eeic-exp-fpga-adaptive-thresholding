@@ -12,10 +12,18 @@ module adaptive_threshold (
   parameter WIDTH = 2**WIDTH_BITS;
   parameter HEIGHT = 2**HEIGHT_BITS;
 
-  // box_filterと画像メモリの接続
+  // 画像メモリアクセス用の信号
   wire [WIDTH_BITS-1:0] imageCol;
   wire [HEIGHT_BITS-1:0] imageRow;
   wire [7:0] imageData;
+
+  // box_filterから画像メモリへの信号
+  wire [WIDTH_BITS-1:0] boxFilterImageCol;
+  wire [HEIGHT_BITS-1:0] boxFilterImageRow;
+
+  // thresholdから画像メモリへの信号
+  wire [WIDTH_BITS-1:0] thresholdImageCol;
+  wire [HEIGHT_BITS-1:0] thresholdImageRow;
 
   // box_filterとしきい値メモリの接続（書き込み）
   wire [WIDTH_BITS-1:0] thresholdWrCol;
@@ -42,6 +50,11 @@ module adaptive_threshold (
   assign oG = {3{resultData}};
   assign oB = {3{resultData}};
 
+  // 画像メモリアクセスのマルチプレクサ
+  // box_filter実行中はbox_filterの信号を使用、threshold実行中はthresholdの信号を使用
+  assign imageCol = threshold_start ? thresholdImageCol : boxFilterImageCol;
+  assign imageRow = threshold_start ? thresholdImageRow : boxFilterImageRow;
+
   // 画像メモリ
   input_rom_reader input_rom_reader0 (
     .clock(clock),
@@ -66,8 +79,8 @@ module adaptive_threshold (
   box_filter box_filter0 (
     .clock(clock),
     .reset(box_filter_start),
-    .oImageCol(imageCol),
-    .oImageRow(imageRow),
+    .oImageCol(boxFilterImageCol),
+    .oImageRow(boxFilterImageRow),
     .iImageData(imageData),
     .oResultCol(thresholdWrCol),
     .oResultRow(thresholdWrRow),
@@ -79,8 +92,8 @@ module adaptive_threshold (
   threshold threshold0 (
     .clock(clock),
     .reset(threshold_start),
-    .oImageCol(imageCol),
-    .oImageRow(imageRow),
+    .oImageCol(thresholdImageCol),
+    .oImageRow(thresholdImageRow),
     .iImageData(imageData),
     .oThresholdCol(thresholdRdCol),
     .oThresholdRow(thresholdRdRow),
