@@ -16,7 +16,7 @@ module threshold #(
   input wire [7:0] iThresholdData,
   output wire [WIDTH_BITS-1:0] oResultCol, // 結果メモリのピクセルのX座標
   output wire [HEIGHT_BITS-1:0] oResultRow, // 結果メモリのピクセルのY座標
-  output reg [7:0] oResultData,
+  output reg oResultData,
   output reg oResultWren, // 結果メモリの書き込み有効信号
   output reg finished // 処理終了フラグ
 );
@@ -46,7 +46,7 @@ module threshold #(
 
         if (!finished) begin
           if (iImageData > (iThresholdData - C)) begin
-            oResultData <= 255; // 白
+            oResultData <= 1; // 白
           end else begin
             oResultData <= 0; // 黒
           end

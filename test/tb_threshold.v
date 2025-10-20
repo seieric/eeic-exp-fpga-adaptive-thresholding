@@ -23,7 +23,7 @@ module tb_threshold;
   // 結果メモリとの接続
   wire [WIDTH_BITS-1:0] resultCol;
   wire [HEIGHT_BITS-1:0] resultRow;
-  wire [7:0] resultData;
+  wire resultData;
   wire resultWren;
 
   // box_filterが終了したかどうか
