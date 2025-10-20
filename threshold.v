@@ -22,7 +22,7 @@ module threshold #(
 );
   // 現在の位置
   reg [WIDTH_BITS+HEIGHT_BITS-1:0] pos;
-  wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_address = pos - 1;
+  wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_address = pos - 1'b1;
 
   // メモリ書き込み終了フラグ
   reg write_finished;
@@ -50,7 +50,7 @@ module threshold #(
           end else begin
             oResultData <= 0; // 黒
           end
-          pos <= pos + 1;
+          pos <= pos + 1'b1;
 
           if (pos == (WIDTH * HEIGHT - 1 )) begin
             finished <= 1;

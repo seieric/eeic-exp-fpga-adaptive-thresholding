@@ -20,7 +20,7 @@ module box_filter #(
   // 現在の位置
   reg [WIDTH_BITS+HEIGHT_BITS-1:0] pos; 
   // 1クロック前の位置（メモリ書き込み用）
-  wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_pos = pos - 1;
+  wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_pos = pos - 1'b1;
   // カーネル内の位置 (0-8)
   // |0|1|2|
   // |3|4|5|
@@ -34,8 +34,8 @@ module box_filter #(
   end
 
   // 読み込むピクセルの座標を計算
-  wire signed [8:0] raw_iCol = pos[WIDTH_BITS-1:0] + (kpos % 3) - 1;
-  wire signed [8:0] raw_iRow = pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS] + (kpos / 3) - 1;
+  wire signed [8:0] raw_iCol = pos[WIDTH_BITS-1:0] + (kpos % 3) - 1'b1;
+  wire signed [8:0] raw_iRow = pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS] + (kpos / 3) - 1'b1;
   // 実際に読み込む座標はクランプして画像範囲内に収める
   assign oImageCol = (raw_iCol < 0) ? {WIDTH_BITS{1'b0}} :
                 (raw_iCol >= WIDTH) ? WIDTH - 1 :
@@ -65,14 +65,14 @@ module box_filter #(
           // カーネル内の現在のピクセルの値をsumに加える
           sum <= sum + iImageData;
           // カーネル内の次のピクセルへ移動
-          kpos <= kpos + 1;
+          kpos <= kpos + 1'b1;
         end else begin
           // sumを9で割って平均値を算出・メモリに書き込む
           oResultData <= sum / 9;
           oResultWren <= 1;
 
           // 次のピクセルへ移動
-          pos <= pos + 1;
+          pos <= pos + 1'b1;
           kpos <= 0;
           sum <= 0;
           if (pos == (WIDTH * HEIGHT - 1)) begin
