@@ -2,7 +2,7 @@
 
 module tb_threshold_rom;
     reg clk;
-    reg [13:0] addr;
+    reg [15:0] addr;
     wire [7:0] data;
 
     threshold_rom threshold_rom0 (

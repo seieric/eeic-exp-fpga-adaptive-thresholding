@@ -2,10 +2,10 @@
 
 module tb_threshold_rom_reader;
     reg clock;
-    wire [6:0] iCol;
-    wire [6:0] iRow;
-    reg [7:0] col;
-    reg [7:0] row;
+    wire [7:0] iCol;
+    wire [7:0] iRow;
+    reg [8:0] col;
+    reg [8:0] row;
     wire [7:0] oData;
 
     threshold_rom_reader threshold_rom_reader0 (
@@ -18,15 +18,15 @@ module tb_threshold_rom_reader;
     initial clock = 0;
     always #5 clock = ~clock; // 10ns周期
 
-    assign iCol = col[6:0];
-    assign iRow = row[6:0];
+    assign iCol = col[7:0];
+    assign iRow = row[7:0];
 
     initial begin
         col = 0;
         row = 0;
 
-        for (row = 0; row < 128; row = row + 1) begin
-            for (col = 0; col < 128; col = col + 1) begin
+        for (row = 0; row < 256; row = row + 1) begin
+            for (col = 0; col < 256; col = col + 1) begin
                 $display("iCol=%d, iRow=%d, oData=%h", col, row, oData);
                 #10; // クロック1サイクル待機
             end
