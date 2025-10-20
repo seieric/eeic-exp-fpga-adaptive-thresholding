@@ -18,11 +18,14 @@ module threshold #(
   output wire [HEIGHT_BITS-1:0] oResultRow, // 結果メモリのピクセルのY座標
   output reg [7:0] oResultData,
   output reg oResultWren, // 結果メモリの書き込み有効信号
-  output reg finished
+  output reg finished // 処理終了フラグ
 );
   // 現在の位置
   reg [WIDTH_BITS+HEIGHT_BITS-1:0] pos;
   wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_address = pos - 1;
+
+  // メモリ書き込み終了フラグ
+  output reg write_finished;
 
   assign oImageCol = pos[WIDTH_BITS-1:0];
   assign oImageRow = pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS];
@@ -36,19 +39,25 @@ module threshold #(
       pos <= 0;
       oResultWren <= 0;
       finished <= 0;
+      write_finished <= 0;
     end else begin
-      if (!finished) begin
-        if (iImageData > (iThresholdData - C)) begin
-          oResultData <= 255; // 白
-        end else begin
-          oResultData <= 0; // 黒
-        end
-
+      if (!write_finished) begin
         oResultWren <= 1;
-        pos <= pos + 1;
-        if (pos == (WIDTH * HEIGHT - 1 )) begin
+
+        if (!finished) begin
+          if (iImageData > (iThresholdData - C)) begin
+            oResultData <= 255; // 白
+          end else begin
+            oResultData <= 0; // 黒
+          end
+          pos <= pos + 1;
+
+          if (pos == (WIDTH * HEIGHT - 1 )) begin
+            finished <= 1;
+          end
+        end else begin
           oResultWren <= 0;
-          finished <= 1;
+          write_finished <= 1;
         end
       end
     end
