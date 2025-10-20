@@ -1,12 +1,12 @@
 module input_rom (clock, address, q);
    input clock;
-   input [13:0] address; // 14bit address
+   input [15:0] address; // 16bit address
    output [7:0] q;  // 8bit
 
-   reg [7:0] m[0:16383];
+   reg [7:0] m[0:65535];
 
    initial begin
-      $readmemh("data/red-blood-cells_128x128-iverilog.hex", m);
+      $readmemh("data/red-blood-cells_256x256-iverilog.hex", m);
    end
 
    assign q=m[address];

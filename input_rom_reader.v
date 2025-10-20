@@ -1,8 +1,8 @@
 // メモリからデータを読み込むモジュール
 module input_rom_reader(clock, iCol, iRow, oData);
-    parameter WIDTH_BITS = 7; // width=128
-    parameter HEIGHT_BITS = 7; // height=128
-    parameter ADDR_WIDTH = 14; // log2(WIDTH * HEIGHT)
+    parameter WIDTH_BITS = 8; // width=256
+    parameter HEIGHT_BITS = 8; // height=256
+    parameter ADDR_WIDTH = 16; // log2(WIDTH * HEIGHT)
 
     input wire clock;
     input wire [WIDTH_BITS-1:0] iCol; // 画像のX座標

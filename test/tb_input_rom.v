@@ -2,7 +2,7 @@
 
 module tb_input_rom;
     reg clk;
-    reg [13:0] addr;
+    reg [15:0] addr;
     wire [7:0] data;
 
     input_rom input_rom0 (
