@@ -2,7 +2,7 @@
 
 module tb_middle_ram;
     reg clk, wren;
-    reg [13:0] addr;
+    reg [15:0] addr;
     reg [7:0] wData;
     wire [7:0] rData;
 

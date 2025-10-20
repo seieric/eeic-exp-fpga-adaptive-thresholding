@@ -1,7 +1,7 @@
 // 中間メモリに読み書きを行うモジュール
 module middle_ram_controller(clock, iRdcol, iRdrow, oRddata, iWren, iWrcol, iWrrow, iWrdata);
-    parameter WIDTH_BITS = 7; // width=128
-    parameter HEIGHT_BITS = 7; // height=128
+    parameter WIDTH_BITS = 8; // width=256
+    parameter HEIGHT_BITS = 8; // height=256
     parameter ADDR_WIDTH = WIDTH_BITS + HEIGHT_BITS;
 
     input wire clock;

@@ -2,10 +2,10 @@
 
 module tb_middle_ram_writer_reader;
     reg clock;
-    reg [6:0] iCol_w, iRow_w;
+    reg [7:0] iCol_w, iRow_w;
     reg [7:0] iData_w;
     reg iWren;
-    reg [6:0] iCol_r, iRow_r;
+    reg [7:0] iCol_r, iRow_r;
     wire [7:0] oData_r;
     
     reg [7:0] expected_data;
@@ -42,9 +42,9 @@ module tb_middle_ram_writer_reader;
         $display("=== Starting Write Operation ===");
         // メモリへの書き込みテスト
         iWren = 1; // 書き込み有効
-        
-        for (integer row = 0; row < 128; row = row + 1) begin
-            for (integer col = 0; col < 128; col = col + 1) begin
+
+        for (integer row = 0; row < 256; row = row + 1) begin
+            for (integer col = 0; col < 256; col = col + 1) begin
                 iCol_w = col;
                 iRow_w = row;
                 iData_w = (row + col) & 8'hFF; // テストデータ（座標の和をデータとして使用）
