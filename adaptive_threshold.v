@@ -40,10 +40,11 @@ module adaptive_threshold (
   // 状態管理
   wire box_filter_finished;
   wire threshold_finished;
-
-  // 処理開始フラグ
-  reg box_filter_start;
-  reg threshold_start;
+  // 0: ready
+  // 1: box_filter
+  // 2: threshold
+  // 3: finished
+  reg [2:0] state;
 
   // 処理結果
   wire resultData;
@@ -57,8 +58,8 @@ module adaptive_threshold (
 
   // 画像メモリアクセスのマルチプレクサ
   // box_filter実行中はbox_filterの信号を使用、threshold実行中はthresholdの信号を使用
-  assign imageCol = threshold_start ? thresholdImageCol : boxFilterImageCol;
-  assign imageRow = threshold_start ? thresholdImageRow : boxFilterImageRow;
+  assign imageCol = (state == 2) ? thresholdImageCol : boxFilterImageCol;
+  assign imageRow = (state == 2) ? thresholdImageRow : boxFilterImageRow;
 
   // 画像メモリ
   input_rom_reader input_rom_reader0 (
@@ -83,7 +84,7 @@ module adaptive_threshold (
   // box_filter
   box_filter box_filter0 (
     .clock(clock),
-    .reset(box_filter_start),
+    .not_reset(not_reset),
     .oImageCol(boxFilterImageCol),
     .oImageRow(boxFilterImageRow),
     .iImageData(imageData),
@@ -91,12 +92,14 @@ module adaptive_threshold (
     .oResultRow(thresholdWrRow),
     .oResultData(thresholdWrData),
     .oResultWren(thresholdWren),
+    .global_state(state),
     .finished(box_filter_finished)
   );
 
+  // threshold
   threshold threshold0 (
     .clock(clock),
-    .reset(threshold_start),
+    .not_reset(not_reset),
     .oImageCol(thresholdImageCol),
     .oImageRow(thresholdImageRow),
     .iImageData(imageData),
@@ -107,25 +110,38 @@ module adaptive_threshold (
     .oResultRow(oY),
     .oResultData(resultData),
     .oResultWren(), // unused
+    .global_state(state),
     .finished(threshold_finished)
   );
 
+  // controller
   always @(posedge clock or negedge not_reset) begin
     if (!not_reset) begin
-      ledr <= 10'b0000000010;
-
-      box_filter_start <= 1;
-      threshold_start <= 0;
-    end else begin
+      // ready状態に戻る
       ledr <= 10'b0000000001;
-
-      // box_filterが完了したらthresholdを開始
-      if (box_filter_finished && !threshold_start) begin
-        threshold_start <= 1;
-      end else begin
-        threshold_start <= 0;
-      end
-      box_filter_start <= 0;
+      state <= 0;
+    end else begin
+      case (state)
+        0: begin // ready
+          // 状態遷移
+          ledr <= 10'b0000000001;
+          state <= 1;
+        end
+        1: begin // box_filter
+          // 状態遷移
+          if (box_filter_finished) begin
+            ledr <= 10'b0000000010;
+            state <= 2;
+          end
+        end
+        2: begin // threshold
+          // 状態遷移
+          if (threshold_finished) begin
+            ledr <= 10'b0000000100;
+            state <= 3;
+          end
+        end
+      endcase
     end
   end
 endmodule
