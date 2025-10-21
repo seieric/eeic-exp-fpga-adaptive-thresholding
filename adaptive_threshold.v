@@ -115,7 +115,8 @@ module adaptive_threshold (
     .oResultData(resultData),
     .oResultWren(), // unused
     .global_state(state),
-    .finished(threshold_finished)
+    .finished(threshold_finished),
+    .C(C)
   );
 
   // controller
