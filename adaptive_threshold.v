@@ -124,7 +124,7 @@ module adaptive_threshold (
     if (!not_reset) begin
       C <= SW[9:5]; // SWの上位5ビットをCに設定
       // ready状態に戻る
-      ledr <= {C, 5'b00001};
+      ledr <= {SW[9:5], 5'b00001};
       state <= 0;
     end else begin
       case (state)
