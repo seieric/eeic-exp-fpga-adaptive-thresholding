@@ -15,6 +15,7 @@ module box_filter #(
     output wire [HEIGHT_BITS-1:0] oResultRow, // 結果メモリのピクセルのY座標
     output reg [7:0] oResultData,
     output reg oResultWren, // 結果メモリの書き込み有効信号
+    input wire [2:0] global_state, // 処理状態（1: box_filter実行中）
     output reg finished
 );
   // 現在の位置
@@ -58,26 +59,28 @@ module box_filter #(
       oResultWren <= 0;
       finished <= 0;
     end else begin
-      oResultWren <= 0;
+      if (global_state == 1) begin
+        oResultWren <= 0;
 
-      if (!finished) begin
-        if (kpos < 9) begin
-          // カーネル内の現在のピクセルの値をsumに加える
-          sum <= sum + iImageData;
-          // カーネル内の次のピクセルへ移動
-          kpos <= kpos + 1'b1;
-        end else begin
-          // sumを9で割って平均値を算出・メモリに書き込む
-          oResultData <= sum / 9;
-          oResultWren <= 1;
+        if (!finished) begin
+          if (kpos < 9) begin
+            // カーネル内の現在のピクセルの値をsumに加える
+            sum <= sum + iImageData;
+            // カーネル内の次のピクセルへ移動
+            kpos <= kpos + 1'b1;
+          end else begin
+            // sumを9で割って平均値を算出・メモリに書き込む
+            oResultData <= sum / 9;
+            oResultWren <= 1;
 
-          // 次のピクセルへ移動
-          pos <= pos + 1'b1;
-          kpos <= 0;
-          sum <= 0;
-          if (pos == (WIDTH * HEIGHT - 1)) begin
-            // 処理完了
-            finished <= 1;
+            // 次のピクセルへ移動
+            pos <= pos + 1'b1;
+            kpos <= 0;
+            sum <= 0;
+            if (pos == (WIDTH * HEIGHT - 1)) begin
+              // 処理完了
+              finished <= 1;
+            end
           end
         end
       end

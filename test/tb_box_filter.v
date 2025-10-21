@@ -38,6 +38,7 @@ module tb_box_filter;
     .oResultRow(resultRow),
     .oResultData(resultData),
     .oResultWren(resultWren),
+    .global_state(3'd1),
     .finished(finished)
   );
 

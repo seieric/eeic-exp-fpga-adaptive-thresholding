@@ -56,6 +56,7 @@ module tb_threshold;
     .oResultRow(resultRow),
     .oResultData(resultData),
     .oResultWren(resultWren),
+    .global_state(3'd2),
     .finished(finished)
   );
 
