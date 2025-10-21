@@ -45,7 +45,7 @@ module tb_threshold;
 
   threshold threshold0 (
     .clock(clock),
-    .reset(reset),
+    .not_reset(~reset),
     .oImageCol(imageCol),
     .oImageRow(imageRow),
     .iImageData(imageData),

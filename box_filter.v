@@ -7,7 +7,7 @@ module box_filter #(
   parameter HEIGHT = 2**HEIGHT_BITS
 )(
     input wire clock,
-    input wire reset,
+    input wire not_reset,
     output wire [WIDTH_BITS-1:0] oImageCol, // 画像メモリのピクセルのX座標
     output wire [HEIGHT_BITS-1:0] oImageRow, // 画像メモリのピクセルのY座標
     input wire [7:0] iImageData,
@@ -50,8 +50,8 @@ module box_filter #(
 
   reg [11:0] sum; // 最大でも255*9=2295なので12ビットで十分
 
-  always @(posedge clock) begin
-    if (reset) begin
+  always @(posedge clock or negedge not_reset) begin
+    if (!not_reset) begin
       pos <= 0;
       kpos <= 0;
       sum <= 0;

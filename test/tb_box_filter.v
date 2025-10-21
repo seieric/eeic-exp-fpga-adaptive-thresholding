@@ -30,7 +30,7 @@ module tb_box_filter;
 
   box_filter box_filter0 (
     .clock(clock),
-    .reset(reset),
+    .not_reset(~reset),
     .oImageCol(imageCol),
     .oImageRow(imageRow),
     .iImageData(imageData),
