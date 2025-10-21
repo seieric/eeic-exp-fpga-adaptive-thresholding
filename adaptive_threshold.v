@@ -106,8 +106,8 @@ module adaptive_threshold (
     .oThresholdCol(thresholdRdCol),
     .oThresholdRow(thresholdRdRow),
     .iThresholdData(thresholdRdData),
-    .oResultCol(oX),
-    .oResultRow(oY),
+    .oResultCol(oY),
+    .oResultRow(oX),
     .oResultData(resultData),
     .oResultWren(), // unused
     .global_state(state),
