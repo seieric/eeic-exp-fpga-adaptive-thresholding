@@ -34,7 +34,7 @@ module threshold #(
   assign oResultCol = write_address[WIDTH_BITS-1:0];
   assign oResultRow = write_address[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS];
 
-  always @(posedge clock or posedge reset) begin
+  always @(posedge clock) begin
     if (reset) begin
       pos <= 0;
       oResultWren <= 0;

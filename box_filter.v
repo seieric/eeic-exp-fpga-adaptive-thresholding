@@ -50,7 +50,7 @@ module box_filter #(
 
   reg [11:0] sum; // 最大でも255*9=2295なので12ビットで十分
 
-  always @(posedge clock or posedge reset) begin
+  always @(posedge clock) begin
     if (reset) begin
       pos <= 0;
       kpos <= 0;
