@@ -3,8 +3,7 @@ module threshold #(
   parameter WIDTH_BITS = 8,
   parameter HEIGHT_BITS = 8,
   parameter WIDTH = 2**WIDTH_BITS,
-  parameter HEIGHT = 2**HEIGHT_BITS,
-  parameter C = 2 // しきい値から引く定数
+  parameter HEIGHT = 2**HEIGHT_BITS
 )(
   input wire clock,
   input wire not_reset,
@@ -19,7 +18,8 @@ module threshold #(
   output reg oResultData,
   output reg oResultWren, // 結果メモリの書き込み有効信号
   input wire [2:0] global_state, // 処理状態（2: threshold実行中）
-  output reg finished // 処理終了フラグ
+  output reg finished, // 処理終了フラグ
+  input wire [4:0] C // しきい値から引く定数
 );
   // 現在の位置
   reg [WIDTH_BITS+HEIGHT_BITS-1:0] pos;
