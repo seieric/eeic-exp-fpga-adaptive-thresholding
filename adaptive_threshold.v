@@ -5,7 +5,8 @@ module adaptive_threshold (
   output wire [7:0] oY,
   output wire [2:0] oR,
   output wire [2:0] oG,
-  output wire [2:0] oB
+  output wire [2:0] oB,
+  output wire [9:0] LEDR
 );
   parameter WIDTH_BITS = 8;
   parameter HEIGHT_BITS = 8;
@@ -49,6 +50,10 @@ module adaptive_threshold (
   assign oR = {3{resultData}};
   assign oG = {3{resultData}};
   assign oB = {3{resultData}};
+
+  // LEDR表示用
+  reg [9:0] ledr;
+  assign LEDR = ledr;
 
   // 画像メモリアクセスのマルチプレクサ
   // box_filter実行中はbox_filterの信号を使用、threshold実行中はthresholdの信号を使用
@@ -105,11 +110,15 @@ module adaptive_threshold (
     .finished(threshold_finished)
   );
 
-  always @(posedge clock) begin
+  always @(posedge clock or negedge not_reset) begin
     if (!not_reset) begin
+      ledr <= 10'b0000000010;
+
       box_filter_start <= 1;
       threshold_start <= 0;
     end else begin
+      ledr <= 10'b0000000001;
+
       // box_filterが完了したらthresholdを開始
       if (box_filter_finished && !threshold_start) begin
         threshold_start <= 1;

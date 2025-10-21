@@ -44,7 +44,7 @@ module top (
   
   pll pll (.refclk(CLK), .rst(~NRST), .outclk_0(CLK40));
 
-  adaptive_threshold u8 (.clock(CLK40), .not_reset(NRST), .oX(posx), .oY(posy), .oR(posr), .oG(posg), .oB(posb));
+  adaptive_threshold u8 (.clock(CLK40), .not_reset(NRST), .oX(posx), .oY(posy), .oR(posr), .oG(posg), .oB(posb), .LEDR(LEDR));
   
   VGA_Ctrl u9 (  
     //  Host Side
