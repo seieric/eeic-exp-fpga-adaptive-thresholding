@@ -16,17 +16,13 @@ module threshold #(
     output wire [WIDTH_BITS-1:0] oResultCol,  // 結果メモリのピクセルのX座標
     output wire [HEIGHT_BITS-1:0] oResultRow,  // 結果メモリのピクセルのY座標
     output reg oResultData,
-    output reg oResultWren,  // 結果メモリの書き込み有効信号
     input wire [2:0] global_state,  // 処理状態（2: threshold実行中）
     output reg finished,  // 処理終了フラグ
     input wire [4:0] C  // しきい値から引く定数
 );
   // 現在の位置
-  reg [WIDTH_BITS+HEIGHT_BITS-1:0] pos;
+  reg  [WIDTH_BITS+HEIGHT_BITS-1:0] pos;
   wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_address = pos - 1'b1;
-
-  // メモリ書き込み終了フラグ
-  reg write_finished;
 
   assign oImageCol = pos[WIDTH_BITS-1:0];
   assign oImageRow = pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS];
@@ -38,29 +34,18 @@ module threshold #(
   always @(posedge clock or negedge not_reset) begin
     if (!not_reset) begin
       pos <= 0;
-      oResultWren <= 0;
       finished <= 0;
-      write_finished <= 0;
     end else begin
-      if (global_state == 2) begin
-        if (!write_finished) begin
-          oResultWren <= 1;
+      if (global_state == 2 && !finished) begin
+        if (iImageData > (iThresholdData - C)) begin
+          oResultData <= 1;  // 白
+        end else begin
+          oResultData <= 0;  // 黒
+        end
+        pos <= pos + 1'b1;
 
-          if (!finished) begin
-            if (iImageData > (iThresholdData - C)) begin
-              oResultData <= 1;  // 白
-            end else begin
-              oResultData <= 0;  // 黒
-            end
-            pos <= pos + 1'b1;
-
-            if (pos == (WIDTH * HEIGHT - 1)) begin
-              finished <= 1;
-            end
-          end else begin
-            oResultWren <= 0;
-            write_finished <= 1;
-          end
+        if (pos == (WIDTH * HEIGHT - 1)) begin
+          finished <= 1;
         end
       end
     end

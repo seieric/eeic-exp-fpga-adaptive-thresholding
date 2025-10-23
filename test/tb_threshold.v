@@ -24,7 +24,6 @@ module tb_threshold;
   wire [WIDTH_BITS-1:0] resultCol;
   wire [HEIGHT_BITS-1:0] resultRow;
   wire resultData;
-  wire resultWren;
 
   // box_filterが終了したかどうか
   wire finished;
@@ -55,7 +54,6 @@ module tb_threshold;
       .oResultCol(resultCol),
       .oResultRow(resultRow),
       .oResultData(resultData),
-      .oResultWren(resultWren),
       .global_state(3'd2),
       .finished(finished),
       .C(5'd2)
@@ -86,10 +84,8 @@ module tb_threshold;
 
   // 書き込み動作の監視
   always @(posedge clock) begin
-    if (resultWren) begin
-      // $display("Writing to [%3d,%3d]: %3d at time %t", resultCol, resultRow, resultData, $time);
-      $display("%d", resultData);
-    end
+    // $display("Writing to [%3d,%3d]: %3d at time %t", resultCol, resultRow, resultData, $time);
+    $display("%d", resultData);
   end
 
 endmodule
