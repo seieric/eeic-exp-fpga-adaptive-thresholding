@@ -1,5 +1,10 @@
 {
+  "verilog.languageServer.veribleVerilogLs.enabled": true,
+  "verilog.formatting.verilogHDL.formatter": "verible-verilog-format",
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "[verilog]": {
+    "editor.defaultFormatter": "mshr-h.veriloghdl"
   }
 }
