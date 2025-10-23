@@ -19,24 +19,25 @@ module box_filter #(
     output reg finished
 );
   // 現在の位置
-  reg [WIDTH_BITS+HEIGHT_BITS-1:0] pos;
+  reg  [WIDTH_BITS+HEIGHT_BITS-1:0] pos;
   // 1クロック前の位置（メモリ書き込み用）
   wire [WIDTH_BITS+HEIGHT_BITS-1:0] write_pos = pos - 1'b1;
-  // カーネル内の位置 (0-8)
-  // |0|1|2|
-  // |3|4|5|
-  // |6|7|8|
-  // kpos=9で平均値計算と書き込みを行う
-  reg [3:0] kpos;
+  // カーネル内の位置 (krow, kcol)
+  // |0,0|0,1|0,2|
+  // |1,0|1,1|1,2|
+  // |2,0|2,1|2,2|
+  // (krow, kcol)=(2,2)で平均値計算と書き込みを行う
+  reg [1:0] kcol, krow;
 
   initial begin
     pos  = 0;
-    kpos = 0;
+    kcol = 0;
+    krow = 0;
   end
 
   // 読み込むピクセルの座標を計算
-  wire signed [8:0] raw_iCol = pos[WIDTH_BITS-1:0] + (kpos % 3) - 1'b1;
-  wire signed [8:0] raw_iRow = pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS] + (kpos / 3) - 1'b1;
+  wire signed [8:0] raw_iCol = pos[WIDTH_BITS-1:0] + kcol - 1'b1;
+  wire signed [8:0] raw_iRow = pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS] + krow - 1'b1;
   // 実際に読み込む座標はクランプして画像範囲内に収める
   assign oImageCol = (raw_iCol < 0) ? {WIDTH_BITS{1'b0}} :
                 (raw_iCol >= WIDTH) ? WIDTH - 1 :
@@ -54,7 +55,8 @@ module box_filter #(
   always @(posedge clock or negedge not_reset) begin
     if (!not_reset) begin
       pos <= 0;
-      kpos <= 0;
+      kcol <= 0;
+      krow <= 0;
       sum <= 0;
       oResultWren <= 0;
       finished <= 0;
@@ -63,11 +65,16 @@ module box_filter #(
         oResultWren <= 0;
 
         if (!finished) begin
-          if (kpos < 9) begin
+          if (krow != 3) begin
             // カーネル内の現在のピクセルの値をsumに加える
-            sum  <= sum + iImageData;
+            sum <= sum + iImageData;
             // カーネル内の次のピクセルへ移動
-            kpos <= kpos + 1'b1;
+            if (kcol == 2) begin
+              kcol <= 0;
+              krow <= krow + 1'b1;
+            end else begin
+              kcol <= kcol + 1'b1;
+            end
           end else begin
             // sumを9で割って平均値を算出・メモリに書き込む
             oResultData <= sum / 9;
@@ -75,7 +82,8 @@ module box_filter #(
 
             // 次のピクセルへ移動
             pos <= pos + 1'b1;
-            kpos <= 0;
+            kcol <= 0;
+            krow <= 0;
             sum <= 0;
             if (pos == (WIDTH * HEIGHT - 1)) begin
               // 処理完了
