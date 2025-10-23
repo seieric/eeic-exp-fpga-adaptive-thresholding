@@ -19,28 +19,8 @@ module adaptive_threshold (
   wire [HEIGHT_BITS-1:0] imageRow;
   wire [7:0] imageData;
 
-  // box_filterから画像メモリへの信号
-  wire [WIDTH_BITS-1:0] boxFilterImageCol;
-  wire [HEIGHT_BITS-1:0] boxFilterImageRow;
-
-  // thresholdから画像メモリへの信号
-  wire [WIDTH_BITS-1:0] thresholdImageCol;
-  wire [HEIGHT_BITS-1:0] thresholdImageRow;
-
-  // box_filterとしきい値メモリの接続（書き込み）
-  wire [WIDTH_BITS-1:0] thresholdWrCol;
-  wire [HEIGHT_BITS-1:0] thresholdWrRow;
-  wire [7:0] thresholdWrData;
-  wire thresholdWren;
-
-  // thresholdとしきい値メモリの接続（読み込み）
-  wire [WIDTH_BITS-1:0] thresholdRdCol;
-  wire [HEIGHT_BITS-1:0] thresholdRdRow;
-  wire [7:0] thresholdRdData;
-
   // 状態管理
   wire box_filter_finished;
-  wire threshold_finished;
   // 0: ready
   // 1: box_filter
   // 2: threshold
@@ -60,11 +40,6 @@ module adaptive_threshold (
   // しきい値から引く定数
   reg [4:0] C;
 
-  // 画像メモリアクセスのマルチプレクサ
-  // box_filter実行中はbox_filterの信号を使用、threshold実行中はthresholdの信号を使用
-  assign imageCol = (state == 2) ? thresholdImageCol : boxFilterImageCol;
-  assign imageRow = (state == 2) ? thresholdImageRow : boxFilterImageRow;
-
   // 画像メモリ
   input_rom_reader input_rom_reader0 (
       .clock(clock),
@@ -73,48 +48,19 @@ module adaptive_threshold (
       .oData(imageData)
   );
 
-  // しきい値メモリ
-  middle_ram_controller middle_ram_controller0 (
-      .clock  (clock),
-      .iWrcol (thresholdWrCol),
-      .iWrrow (thresholdWrRow),
-      .iWrdata(thresholdWrData),
-      .iWren  (thresholdWren),
-      .iRdcol (thresholdRdCol),
-      .iRdrow (thresholdRdRow),
-      .oRddata(thresholdRdData)
-  );
-
   // box_filter
   box_filter box_filter0 (
       .clock(clock),
       .not_reset(not_reset),
-      .oImageCol(boxFilterImageCol),
-      .oImageRow(boxFilterImageRow),
+      .oImageCol(imageCol),
+      .oImageRow(imageRow),
       .iImageData(imageData),
-      .oResultCol(thresholdWrCol),
-      .oResultRow(thresholdWrRow),
-      .oResultData(thresholdWrData),
-      .oResultWren(thresholdWren),
-      .global_state(state),
-      .finished(box_filter_finished)
-  );
-
-  // threshold
-  threshold threshold0 (
-      .clock(clock),
-      .not_reset(not_reset),
-      .oImageCol(thresholdImageCol),
-      .oImageRow(thresholdImageRow),
-      .iImageData(imageData),
-      .oThresholdCol(thresholdRdCol),
-      .oThresholdRow(thresholdRdRow),
-      .iThresholdData(thresholdRdData),
       .oResultCol(oY),
       .oResultRow(oX),
       .oResultData(resultData),
+      .oResultWren(),
       .global_state(state),
-      .finished(threshold_finished),
+      .finished(box_filter_finished),
       .C(C)
   );
 
@@ -139,12 +85,10 @@ module adaptive_threshold (
             state <= 2;
           end
         end
-        2: begin  // threshold
+        2: begin  // unused
           // 状態遷移
-          if (threshold_finished) begin
-            ledr  <= {C, 5'b01000};
-            state <= 3;
-          end
+          ledr  <= {C, 5'b01000};
+          state <= 3;
         end
       endcase
     end
