@@ -1,18 +1,18 @@
 module adaptive_threshold (
-  input wire clock,
-  input wire not_reset,
-  output wire [7:0] oX,
-  output wire [7:0] oY,
-  output wire [2:0] oR,
-  output wire [2:0] oG,
-  output wire [2:0] oB,
-  output wire [9:0] LEDR,
-  input wire [9:0] SW
+    input wire clock,
+    input wire not_reset,
+    output wire [7:0] oX,
+    output wire [7:0] oY,
+    output wire [2:0] oR,
+    output wire [2:0] oG,
+    output wire [2:0] oB,
+    output wire [9:0] LEDR,
+    input wire [9:0] SW
 );
   parameter WIDTH_BITS = 8;
   parameter HEIGHT_BITS = 8;
-  parameter WIDTH = 2**WIDTH_BITS;
-  parameter HEIGHT = 2**HEIGHT_BITS;
+  parameter WIDTH = 2 ** WIDTH_BITS;
+  parameter HEIGHT = 2 ** HEIGHT_BITS;
 
   // 画像メモリアクセス用の信号
   wire [WIDTH_BITS-1:0] imageCol;
@@ -67,83 +67,83 @@ module adaptive_threshold (
 
   // 画像メモリ
   input_rom_reader input_rom_reader0 (
-    .clock(clock),
-    .iCol(imageCol),
-    .iRow(imageRow),
-    .oData(imageData)
+      .clock(clock),
+      .iCol (imageCol),
+      .iRow (imageRow),
+      .oData(imageData)
   );
 
   // しきい値メモリ
   middle_ram_controller middle_ram_controller0 (
-    .clock(clock),
-    .iWrcol(thresholdWrCol),
-    .iWrrow(thresholdWrRow),
-    .iWrdata(thresholdWrData),
-    .iWren(thresholdWren),
-    .iRdcol(thresholdRdCol),
-    .iRdrow(thresholdRdRow),
-    .oRddata(thresholdRdData)
+      .clock  (clock),
+      .iWrcol (thresholdWrCol),
+      .iWrrow (thresholdWrRow),
+      .iWrdata(thresholdWrData),
+      .iWren  (thresholdWren),
+      .iRdcol (thresholdRdCol),
+      .iRdrow (thresholdRdRow),
+      .oRddata(thresholdRdData)
   );
 
   // box_filter
   box_filter box_filter0 (
-    .clock(clock),
-    .not_reset(not_reset),
-    .oImageCol(boxFilterImageCol),
-    .oImageRow(boxFilterImageRow),
-    .iImageData(imageData),
-    .oResultCol(thresholdWrCol),
-    .oResultRow(thresholdWrRow),
-    .oResultData(thresholdWrData),
-    .oResultWren(thresholdWren),
-    .global_state(state),
-    .finished(box_filter_finished)
+      .clock(clock),
+      .not_reset(not_reset),
+      .oImageCol(boxFilterImageCol),
+      .oImageRow(boxFilterImageRow),
+      .iImageData(imageData),
+      .oResultCol(thresholdWrCol),
+      .oResultRow(thresholdWrRow),
+      .oResultData(thresholdWrData),
+      .oResultWren(thresholdWren),
+      .global_state(state),
+      .finished(box_filter_finished)
   );
 
   // threshold
   threshold threshold0 (
-    .clock(clock),
-    .not_reset(not_reset),
-    .oImageCol(thresholdImageCol),
-    .oImageRow(thresholdImageRow),
-    .iImageData(imageData),
-    .oThresholdCol(thresholdRdCol),
-    .oThresholdRow(thresholdRdRow),
-    .iThresholdData(thresholdRdData),
-    .oResultCol(oY),
-    .oResultRow(oX),
-    .oResultData(resultData),
-    .oResultWren(), // unused
-    .global_state(state),
-    .finished(threshold_finished),
-    .C(C)
+      .clock(clock),
+      .not_reset(not_reset),
+      .oImageCol(thresholdImageCol),
+      .oImageRow(thresholdImageRow),
+      .iImageData(imageData),
+      .oThresholdCol(thresholdRdCol),
+      .oThresholdRow(thresholdRdRow),
+      .iThresholdData(thresholdRdData),
+      .oResultCol(oY),
+      .oResultRow(oX),
+      .oResultData(resultData),
+      .oResultWren(),  // unused
+      .global_state(state),
+      .finished(threshold_finished),
+      .C(C)
   );
 
   // controller
   always @(posedge clock or negedge not_reset) begin
     if (!not_reset) begin
-      C <= SW[9:5]; // SWの上位5ビットをCに設定
+      C <= SW[9:5];  // SWの上位5ビットをCに設定
       // ready状態に戻る
       ledr <= {SW[9:5], 5'b00001};
       state <= 0;
     end else begin
       case (state)
-        0: begin // ready
+        0: begin  // ready
           // 状態遷移
-          ledr <= {C, 5'b00010};
+          ledr  <= {C, 5'b00010};
           state <= 1;
         end
-        1: begin // box_filter
+        1: begin  // box_filter
           // 状態遷移
           if (box_filter_finished) begin
-            ledr <= {C, 5'b00100};
+            ledr  <= {C, 5'b00100};
             state <= 2;
           end
         end
-        2: begin // threshold
+        2: begin  // threshold
           // 状態遷移
           if (threshold_finished) begin
-            ledr <= {C, 5'b01000};
+            ledr  <= {C, 5'b01000};
             state <= 3;
           end
         end

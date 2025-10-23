@@ -3,8 +3,8 @@
 module tb_threshold;
   parameter WIDTH_BITS = 8;
   parameter HEIGHT_BITS = 8;
-  parameter WIDTH = 2**WIDTH_BITS;
-  parameter HEIGHT = 2**HEIGHT_BITS;
+  parameter WIDTH = 2 ** WIDTH_BITS;
+  parameter HEIGHT = 2 ** HEIGHT_BITS;
 
   reg clock;
   reg reset;
@@ -30,40 +30,40 @@ module tb_threshold;
   wire finished;
 
   input_rom_reader input_rom_reader0 (
-    .clock(clock),
-    .iCol(imageCol),
-    .iRow(imageRow),
-    .oData(imageData)
+      .clock(clock),
+      .iCol (imageCol),
+      .iRow (imageRow),
+      .oData(imageData)
   );
 
   threshold_rom_reader threshold_rom_reader0 (
-    .clock(clock),
-    .iCol(thresholdCol),
-    .iRow(thresholdRow),
-    .oData(thresholdData)
+      .clock(clock),
+      .iCol (thresholdCol),
+      .iRow (thresholdRow),
+      .oData(thresholdData)
   );
 
   threshold threshold0 (
-    .clock(clock),
-    .not_reset(~reset),
-    .oImageCol(imageCol),
-    .oImageRow(imageRow),
-    .iImageData(imageData),
-    .oThresholdCol(thresholdCol),
-    .oThresholdRow(thresholdRow),
-    .iThresholdData(thresholdData),
-    .oResultCol(resultCol),
-    .oResultRow(resultRow),
-    .oResultData(resultData),
-    .oResultWren(resultWren),
-    .global_state(3'd2),
-    .finished(finished),
-    .C(5'd2)
+      .clock(clock),
+      .not_reset(~reset),
+      .oImageCol(imageCol),
+      .oImageRow(imageRow),
+      .iImageData(imageData),
+      .oThresholdCol(thresholdCol),
+      .oThresholdRow(thresholdRow),
+      .iThresholdData(thresholdData),
+      .oResultCol(resultCol),
+      .oResultRow(resultRow),
+      .oResultData(resultData),
+      .oResultWren(resultWren),
+      .global_state(3'd2),
+      .finished(finished),
+      .C(5'd2)
   );
 
 
   initial clock = 0;
-  always #5 clock = ~clock; // 10ns周期
+  always #5 clock = ~clock;  // 10ns周期
 
   initial begin
     reset = 1;
@@ -71,9 +71,9 @@ module tb_threshold;
     reset = 0;
 
     // $display("Starting thresholding...");
-    
+
     // finishedシグナルを待つ
-    wait(finished == 1);
+    wait (finished == 1);
     #20;
     // $display("Thresholding finished!");
     $finish;

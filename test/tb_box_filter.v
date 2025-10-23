@@ -3,8 +3,8 @@
 module tb_box_filter;
   parameter WIDTH_BITS = 8;
   parameter HEIGHT_BITS = 8;
-  parameter WIDTH = 2**WIDTH_BITS;
-  parameter HEIGHT = 2**HEIGHT_BITS;
+  parameter WIDTH = 2 ** WIDTH_BITS;
+  parameter HEIGHT = 2 ** HEIGHT_BITS;
 
   reg clock;
   reg reset;
@@ -29,39 +29,39 @@ module tb_box_filter;
   wire finished;
 
   box_filter box_filter0 (
-    .clock(clock),
-    .not_reset(~reset),
-    .oImageCol(imageCol),
-    .oImageRow(imageRow),
-    .iImageData(imageData),
-    .oResultCol(resultCol),
-    .oResultRow(resultRow),
-    .oResultData(resultData),
-    .oResultWren(resultWren),
-    .global_state(3'd1),
-    .finished(finished)
+      .clock(clock),
+      .not_reset(~reset),
+      .oImageCol(imageCol),
+      .oImageRow(imageRow),
+      .iImageData(imageData),
+      .oResultCol(resultCol),
+      .oResultRow(resultRow),
+      .oResultData(resultData),
+      .oResultWren(resultWren),
+      .global_state(3'd1),
+      .finished(finished)
   );
 
   input_rom_reader input_rom_reader0 (
-    .clock(clock),
-    .iCol(imageCol),
-    .iRow(imageRow),
-    .oData(imageData)
+      .clock(clock),
+      .iCol (imageCol),
+      .iRow (imageRow),
+      .oData(imageData)
   );
 
   middle_ram_controller middle_ram_controller0 (
-    .clock(clock),
-    .iWrcol(resultCol),
-    .iWrrow(resultRow),
-    .iWrdata(resultData),
-    .iWren(resultWren),
-    .iRdcol(iCol),
-    .iRdrow(iRow),
-    .oRddata(oData)
+      .clock  (clock),
+      .iWrcol (resultCol),
+      .iWrrow (resultRow),
+      .iWrdata(resultData),
+      .iWren  (resultWren),
+      .iRdcol (iCol),
+      .iRdrow (iRow),
+      .oRddata(oData)
   );
 
   initial clock = 0;
-  always #5 clock = ~clock; // 10ns周期
+  always #5 clock = ~clock;  // 10ns周期
 
   // テストに必要な変数
   reg verification_started;
@@ -70,8 +70,8 @@ module tb_box_filter;
   wire [7:0] rdData;
   integer i, j;
 
-  assign iCol = rdCol;
-  assign iRow = rdRow;
+  assign iCol   = rdCol;
+  assign iRow   = rdRow;
   assign rdData = oData;
 
   initial begin
@@ -83,26 +83,26 @@ module tb_box_filter;
     reset = 0;
 
     $display("Starting box filter processing...");
-    
+
     // finishedシグナルを待つ
-    wait(finished == 1);
+    wait (finished == 1);
     #20;
     $display("Box filter finished! Starting memory verification...");
-    
+
     // 少し待ってからメモリ読み出し開始
     #20;
     verification_started = 1;
-    
+
     // 全ピクセルの結果を読み出して表示
     for (i = 0; i < HEIGHT; i = i + 1) begin
       for (j = 0; j < WIDTH; j = j + 1) begin
         rdRow = i;
         rdCol = j;
-        #10; // 1クロック待機してデータを安定させる
+        #10;  // 1クロック待機してデータを安定させる
         $display("middle_ram[%3d,%3d] = %3d (0x%02h)", j, i, rdData, rdData);
       end
     end
-    
+
     $display("Memory verification completed!");
     #100;
     $finish;
