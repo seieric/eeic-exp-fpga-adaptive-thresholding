@@ -4,7 +4,9 @@ module box_filter #(
     parameter WIDTH_BITS = 8,
     parameter HEIGHT_BITS = 8,
     parameter WIDTH = 2 ** WIDTH_BITS,
-    parameter HEIGHT = 2 ** HEIGHT_BITS
+    parameter HEIGHT = 2 ** HEIGHT_BITS,
+    parameter START_POS = 0,
+    parameter END_POS = WIDTH * HEIGHT - 1
 ) (
     input wire clock,
     input wire not_reset,
@@ -30,7 +32,7 @@ module box_filter #(
   reg [1:0] kcol, krow;
 
   initial begin
-    pos  = 0;
+    pos  = START_POS;
     kcol = 0;
     krow = 0;
   end
@@ -54,7 +56,7 @@ module box_filter #(
 
   always @(posedge clock or negedge not_reset) begin
     if (!not_reset) begin
-      pos <= 0;
+      pos <= START_POS;
       kcol <= 0;
       krow <= 0;
       sum <= 0;
@@ -85,7 +87,7 @@ module box_filter #(
             kcol <= 0;
             krow <= 0;
             sum <= 0;
-            if (pos == (WIDTH * HEIGHT - 1)) begin
+            if (pos == END_POS) begin
               // 処理完了
               finished <= 1;
             end
