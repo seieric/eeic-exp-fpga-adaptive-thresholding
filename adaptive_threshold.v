@@ -113,7 +113,6 @@ module adaptive_threshold (
       .oResultCol(oY),
       .oResultRow(oX),
       .oResultData(resultData),
-      .oResultWren(),  // unused
       .global_state(state),
       .finished(threshold_finished),
       .C(C)
