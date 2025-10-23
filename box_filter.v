@@ -15,7 +15,7 @@ module box_filter #(
     input wire [7:0] iImageData,
     output wire [WIDTH_BITS-1:0] oResultCol,  // 結果メモリのピクセルのX座標
     output wire [HEIGHT_BITS-1:0] oResultRow,  // 結果メモリのピクセルのY座標
-    output reg [7:0] oResultData,
+    output reg oResultData,
     output reg oResultWren,  // 結果メモリの書き込み有効信号
     input wire [2:0] global_state,  // 処理状態（1: box_filter実行中）
     output reg finished,
@@ -89,9 +89,9 @@ module box_filter #(
             threshold <= (sum * 455) >> 12;
             // 中心ピクセルと比較して2値化
             if (centerPixel > (threshold - C)) begin
-              oResultData <= 8'hFF;  // 白
+              oResultData <= 1;  // 白
             end else begin
-              oResultData <= 8'h00;  // 黒
+              oResultData <= 0;  // 黒
             end
             oResultWren <= 1;
 
