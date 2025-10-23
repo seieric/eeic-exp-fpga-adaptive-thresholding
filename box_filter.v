@@ -18,7 +18,8 @@ module box_filter #(
     output reg [7:0] oResultData,
     output reg oResultWren,  // 結果メモリの書き込み有効信号
     input wire [2:0] global_state,  // 処理状態（1: box_filter実行中）
-    output reg finished
+    output reg finished,
+    input wire [4:0] C  // しきい値から引く定数
 );
   // 現在の位置
   reg  [WIDTH_BITS+HEIGHT_BITS-1:0] pos;
@@ -53,6 +54,8 @@ module box_filter #(
   assign oResultRow = write_pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS];
 
   reg [11:0] sum;  // 最大でも255*9=2295なので12ビットで十分
+  reg [ 7:0] centerPixel;  // カーネル中心のピクセル値
+  reg [ 7:0] threshold;  // 計算されたしきい値
 
   always @(posedge clock or negedge not_reset) begin
     if (!not_reset) begin
@@ -71,6 +74,10 @@ module box_filter #(
             // カーネル内の現在のピクセルの値をsumに加える
             sum <= sum + iImageData;
             // カーネル内の次のピクセルへ移動
+            if (kcol == 1 && krow == 1) begin
+              // カーネル中心のピクセル値を保存
+              centerPixel <= iImageData;
+            end
             if (kcol == 2) begin
               kcol <= 0;
               krow <= krow + 1'b1;
@@ -78,8 +85,14 @@ module box_filter #(
               kcol <= kcol + 1'b1;
             end
           end else begin
-            // 平均値を近似算出・メモリに書き込む
-            oResultData <= (sum * 455) >> 12;
+            // 平均値を近似算出
+            threshold <= (sum * 455) >> 12;
+            // 中心ピクセルと比較して2値化
+            if (centerPixel > (threshold - C)) begin
+              oResultData <= 8'hFF;  // 白
+            end else begin
+              oResultData <= 8'h00;  // 黒
+            end
             oResultWren <= 1;
 
             // 次のピクセルへ移動

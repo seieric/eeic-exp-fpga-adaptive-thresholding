@@ -39,7 +39,8 @@ module tb_box_filter;
       .oResultData(resultData),
       .oResultWren(resultWren),
       .global_state(3'd1),
-      .finished(finished)
+      .finished(finished),
+      .C(5'd2)
   );
 
   input_rom_reader input_rom_reader0 (
