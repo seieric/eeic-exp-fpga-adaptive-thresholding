@@ -76,8 +76,8 @@ module box_filter #(
               kcol <= kcol + 1'b1;
             end
           end else begin
-            // sumを9で割って平均値を算出・メモリに書き込む
-            oResultData <= sum / 9;
+            // 平均値を近似算出・メモリに書き込む
+            oResultData <= (sum * 455) >> 12;
             oResultWren <= 1;
 
             // 次のピクセルへ移動
