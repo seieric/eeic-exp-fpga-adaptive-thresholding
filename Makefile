@@ -25,4 +25,4 @@ threshold: input_rom.v input_rom_reader.v threshold_rom.v threshold_rom_reader.v
 	iverilog input_rom.v input_rom_reader.v threshold_rom.v threshold_rom_reader.v threshold.v test/tb_threshold.v
 
 adaptive_threshold: input_rom.v input_rom_reader.v middle_ram.v middle_ram_controller.v box_filter.v threshold_rom.v threshold_rom_reader.v threshold.v adaptive_threshold.v
-	iverilog input_rom.v input_rom_reader.v middle_ram.v middle_ram_controller.v box_filter.v threshold_rom.v threshold_rom_reader.v threshold.v adaptive_threshold.v
+	iverilog -g2005-sv input_rom.v input_rom_reader.v middle_ram.v middle_ram_controller.v box_filter.v threshold_rom.v threshold_rom_reader.v threshold.v adaptive_threshold.v
