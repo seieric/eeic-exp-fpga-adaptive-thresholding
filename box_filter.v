@@ -53,9 +53,15 @@ module box_filter #(
   assign oResultCol = write_pos[WIDTH_BITS-1:0];
   assign oResultRow = write_pos[WIDTH_BITS+HEIGHT_BITS-1:WIDTH_BITS];
 
-  reg [11:0] sum;  // 最大でも255*9=2295なので12ビットで十分
-  reg [ 7:0] centerPixel;  // カーネル中心のピクセル値
-  reg [ 7:0] threshold;  // 計算されたしきい値
+  reg  [11:0] sum;  // 最大でも255*9=2295なので12ビットで十分
+  reg  [ 7:0] centerPixel;  // カーネル中心のピクセル値
+
+  // 組み合わせ回路でしきい値を計算（オーバーフロー対策）
+  wire [19:0] mult_result = sum * 455;  // 20bitあれば十分
+  wire [ 7:0] threshold = mult_result >> 12;  // 平均値近似
+
+  // アンダーフロー対策のためのしきい値計算
+  wire [ 7:0] safe_threshold = (threshold > C) ? (threshold - C) : 8'd0;
 
   always @(posedge clock or negedge not_reset) begin
     if (!not_reset) begin
@@ -85,10 +91,8 @@ module box_filter #(
               kcol <= kcol + 1'b1;
             end
           end else begin
-            // 平均値を近似算出
-            threshold <= (sum * 455) >> 12;
             // 中心ピクセルと比較して2値化
-            if (centerPixel > (threshold - C)) begin
+            if (centerPixel > safe_threshold) begin
               oResultData <= 1;  // 白
             end else begin
               oResultData <= 0;  // 黒
