@@ -10,3 +10,5 @@
 - `negedge NRST`で非同期リセットが実現できる。
 - LEDやVGA出力は多くの電流を必要とするため、遅延が発生しやすい。
   - 動作確認目的でLEDを使う場合は最小限の数にする。
+
+- FPGA上のblock memory bitsは5662720bit（約691kiB=708kB）。
