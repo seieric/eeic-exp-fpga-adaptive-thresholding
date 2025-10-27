@@ -42,6 +42,8 @@ module top (
   wire [7:0] posx, posy;
   wire [2:0] posr, posg, posb;
 
+  wire [23:0] cycle_count;
+
   pll pll (
       .refclk(CLK),
       .rst(~NRST),
@@ -58,6 +60,16 @@ module top (
       .oB(posb),
       .LEDR(LEDR),
       .SW(SW)
+  );
+
+  display_7seg display_7seg_inst (
+      .value(cycle_count),
+      .HEX0 (HEX0),
+      .HEX1 (HEX1),
+      .HEX2 (HEX2),
+      .HEX3 (HEX3),
+      .HEX4 (HEX4),
+      .HEX5 (HEX5)
   );
 
   VGA_Ctrl u9 (

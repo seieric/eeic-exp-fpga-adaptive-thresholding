@@ -7,7 +7,8 @@ module adaptive_threshold (
     output wire [2:0] oG,
     output wire [2:0] oB,
     output wire [9:0] LEDR,
-    input wire [9:0] SW
+    input wire [9:0] SW,
+    output reg [23:0] cycle_count
 );
   parameter WIDTH_BITS = 8;
   parameter HEIGHT_BITS = 8;
@@ -99,6 +100,7 @@ module adaptive_threshold (
       processing_enable <= 0;
       processing_counter <= 0;
       state <= 0;
+      cycle_count <= 0;
     end else begin
       case (state)
         0: begin  // ready
@@ -107,6 +109,7 @@ module adaptive_threshold (
           state <= 1;
         end
         1: begin  // box_filter
+          cycle_count <= cycle_count + 1;
           // 状態遷移
           if (processing_counter != NUM_PARALLEL) begin
             processing_enable[processing_counter] <= 1;
