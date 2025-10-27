@@ -3,9 +3,7 @@ module adaptive_threshold (
     input wire not_reset,
     output wire [7:0] oX,
     output wire [7:0] oY,
-    output wire [2:0] oR,
-    output wire [2:0] oG,
-    output wire [2:0] oB,
+    output wire oValue,
     output wire [9:0] LEDR,
     input wire [9:0] SW,
     output reg [23:0] cycle_count
@@ -52,9 +50,7 @@ module adaptive_threshold (
 
   assign oX = resultRow[output_index];
   assign oY = resultCol[output_index];
-  assign oR = {3{resultData[output_index]}};
-  assign oG = {3{resultData[output_index]}};
-  assign oB = {3{resultData[output_index]}};
+  assign oValue = resultData[output_index];
 
   // LEDR表示用
   reg [9:0] ledr;

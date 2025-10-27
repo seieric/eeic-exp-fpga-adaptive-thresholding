@@ -17,11 +17,7 @@ module VGA_Ctrl (  //  Host Side
 
     write_x,
     write_y,
-    write_r,
-    write_g,
-    write_b
-
-
+    write_value
 );
   //  Host Side
   output [10:0] oCurrent_X;
@@ -38,7 +34,7 @@ module VGA_Ctrl (  //  Host Side
   //  VRAM RW
   output [7:0] oVGA_R, oVGA_G, oVGA_B;
   input [7:0] write_x, write_y;
-  input [2:0] write_r, write_g, write_b;
+  input write_value;
 
   //  Internal Registers
   reg [10:0] H_Cont;
@@ -69,7 +65,7 @@ module VGA_Ctrl (  //  Host Side
   wire [10:0] HACT;
   assign HACT = H_ACT;
   wire [15:0] NextVAddr;
-  wire [ 8:0] vramout;
+  wire vramout;
   wire [15:0] write_addr;
 
   wire [7:0] X, Y;
@@ -81,13 +77,13 @@ module VGA_Ctrl (  //  Host Side
   assign Y = oCurrent_Y[8:1];
 
 
-  reg [8:0] vramR;
+  reg vramR;
 
   assign NextVAddr = {X, Y};
   // Blank
-  assign  oVGA_R = (oCurrent_X >= 11 'b 010_0000_0000 || oCurrent_Y >= 11 'b 010_0000_0000 ) ? 8'b 0 : {vramR[8:6],5'b 0};
-  assign  oVGA_G = (oCurrent_X >= 11 'b 010_0000_0000 || oCurrent_Y >= 11 'b 010_0000_0000 ) ? 8'b 0 : {vramR[5:3],5'b 0};
-  assign  oVGA_B = (oCurrent_X >= 11 'b 010_0000_0000 || oCurrent_Y >= 11 'b 010_0000_0000 ) ? 8'b 0 : {vramR[2:0],5'b 0};
+  assign  oVGA_R = (oCurrent_X >= 11 'b 010_0000_0000 || oCurrent_Y >= 11 'b 010_0000_0000 ) ? 8'b 0 : (vramR ? 8'hFF : 8'h00);
+  assign  oVGA_G = (oCurrent_X >= 11 'b 010_0000_0000 || oCurrent_Y >= 11 'b 010_0000_0000 ) ? 8'b 0 : (vramR ? 8'hFF : 8'h00);
+  assign  oVGA_B = (oCurrent_X >= 11 'b 010_0000_0000 || oCurrent_Y >= 11 'b 010_0000_0000 ) ? 8'b 0 : (vramR ? 8'hFF : 8'h00);
   // Repeat
   //   assign  oVGA_R = {vramR[8:6],5'b 0};
   //   assign  oVGA_G = {vramR[5:3],5'b 0};
@@ -117,11 +113,11 @@ module VGA_Ctrl (  //  Host Side
   //             .rdaddress(crdaddress),
   //             .q(cr_code)
   //       );
-  // VRAM 256 x 256 (65,536w x 9bit)
+  // VRAM 256 x 256 (65,536w x 1bit)
   vram64k u10 (  // for Quartus Synthesis
       // vram u10 (  // for Simulation
       .clock(iCLK),
-      .data({write_r, write_g, write_b}),
+      .data(write_value),
       .wraddress(write_addr),
       .wren(1'b1),
       .rdaddress(NextVAddr),
@@ -174,10 +170,10 @@ module vram (
 );
   input clock, wren;
   input [15:0] wraddress, rdaddress;
-  input [8:0] data;
-  output [8:0] q;
+  input data;
+  output q;
 
-  reg [8:0] m[0:65535];
+  reg m[0:65535];
 
   assign q = m[rdaddress];
   always @(posedge clock) begin

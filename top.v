@@ -40,7 +40,7 @@ module top (
   assign VGA_CLK = CLK40;
 
   wire [7:0] posx, posy;
-  wire [2:0] posr, posg, posb;
+  wire posvalue;
 
   wire [23:0] cycle_count;
 
@@ -55,9 +55,7 @@ module top (
       .not_reset(NRST),
       .oX(posx),
       .oY(posy),
-      .oR(posr),
-      .oG(posg),
-      .oB(posb),
+      .oValue(posvalue),
       .LEDR(LEDR),
       .SW(SW),
       .cycle_count(cycle_count)
@@ -93,8 +91,6 @@ module top (
 
       .write_x(posx),
       .write_y(posy),
-      .write_r(posr),
-      .write_g(posg),
-      .write_b(posb)
+      .write_value(posvalue)
   );
 endmodule
