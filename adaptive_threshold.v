@@ -22,7 +22,8 @@ module adaptive_threshold (
   wire [7:0] imageData[NUM_PARALLEL];
 
   // 状態管理
-  reg [NUM_PARALLEL-1:0] processing;
+  reg [NUM_PARALLEL-1:0] processing_enable;  // 各モジュールを起動しているかどうか
+  reg [NUM_PARALLEL_BITS:0] processing_counter; // 起動しているモジュール数をカウント
   wire [NUM_PARALLEL-1:0] finished;
   wire box_filter_finished = &finished;
   // 0: ready
@@ -87,7 +88,7 @@ module adaptive_threshold (
           .oResultRow(resultRow[i]),
           .oResultData(resultData[i]),
           .oResultWren(resultWren[i]),
-          .processing(processing[i]),
+          .processing(processing_enable[i]),
           .finished(finished[i]),
           .C(C)
       );
@@ -100,7 +101,8 @@ module adaptive_threshold (
       C <= SW[9:5];  // SWの上位5ビットをCに設定
       // ready状態に戻る
       ledr <= {SW[9:5], 5'b00001};
-      processing <= 0;
+      processing_enable <= 0;
+      processing_counter <= 0;
       state <= 0;
     end else begin
       case (state)
@@ -111,8 +113,9 @@ module adaptive_threshold (
         end
         1: begin  // box_filter
           // 状態遷移
-          if (processing != NUM_PARALLEL - 1) begin
-            processing <= processing + 1;
+          if (processing_counter != NUM_PARALLEL) begin
+            processing_enable[processing_counter] <= 1;
+            processing_counter <= processing_counter + 1;
           end
           if (box_filter_finished) begin
             ledr  <= {C, 5'b00100};
