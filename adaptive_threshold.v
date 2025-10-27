@@ -72,7 +72,9 @@ module adaptive_threshold (
       // box_filter
       box_filter #(
           .START_POS(i * (WIDTH * HEIGHT / NUM_PARALLEL)),
-          .END_POS  ((i + 1) * (WIDTH * HEIGHT / NUM_PARALLEL) - 1)
+          .END_POS  ((i == NUM_PARALLEL - 1) ?
+                     (WIDTH * HEIGHT - 1) :
+                     ((i + 1) * (WIDTH * HEIGHT / NUM_PARALLEL) - 1))
       ) box_filter_inst (
           .clock(clock),
           .not_reset(not_reset),
