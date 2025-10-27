@@ -38,13 +38,22 @@ module adaptive_threshold (
   wire resultWren[NUM_PARALLEL];
 
   // 書き込み有効かどうかで出力を切り替える
-  reg [NUM_PARALLEL_BITS-1:0] output_mask;
+  wire [NUM_PARALLEL_BITS-1:0] output_index;
+  integer j;
+  always_comb begin
+    output_index = 0;  // デフォルト値
+    for (j = 0; j < NUM_PARALLEL; j = j + 1) begin
+      if (resultWren[j]) begin
+        output_index = j;
+      end
+    end
+  end
 
-  assign oX = resultRow[output_mask];
-  assign oY = resultCol[output_mask];
-  assign oR = {3{resultData[output_mask]}};
-  assign oG = {3{resultData[output_mask]}};
-  assign oB = {3{resultData[output_mask]}};
+  assign oX = resultRow[output_index];
+  assign oY = resultCol[output_index];
+  assign oR = {3{resultData[output_index]}};
+  assign oG = {3{resultData[output_index]}};
+  assign oB = {3{resultData[output_index]}};
 
   // LEDR表示用
   reg [9:0] ledr;
@@ -84,21 +93,6 @@ module adaptive_threshold (
       );
     end
   endgenerate
-
-  // oResultWrenを監視してoutput_maskを更新
-  integer j;
-  always @(posedge clock or negedge not_reset) begin
-    if (!not_reset) begin
-      output_mask <= 0;
-    end else begin
-      // resultWrenが1になったフィルターをアクティブにする
-      for (j = 0; j < NUM_PARALLEL; j = j + 1) begin
-        if (resultWren[j]) begin
-          output_mask <= j[1:0];
-        end
-      end
-    end
-  end
 
   // controller
   always @(posedge clock or negedge not_reset) begin
