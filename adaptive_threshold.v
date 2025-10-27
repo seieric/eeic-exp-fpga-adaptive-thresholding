@@ -40,15 +40,10 @@ module adaptive_threshold (
 
   // 書き込み有効かどうかで出力を切り替える
   wire [NUM_PARALLEL_BITS-1:0] output_index;
-  integer j;
-  always_comb begin
-    output_index = 0;  // デフォルト値
-    for (j = 0; j < NUM_PARALLEL; j = j + 1) begin
-      if (resultWren[j]) begin
-        output_index = j;
-      end
-    end
-  end
+  assign output_index = resultWren[0] ? 2'd0 :
+                        resultWren[1] ? 2'd1 :
+                        resultWren[2] ? 2'd2 :
+                        resultWren[3] ? 2'd3 : 2'd0;
 
   assign oX = resultRow[output_index];
   assign oY = resultCol[output_index];
