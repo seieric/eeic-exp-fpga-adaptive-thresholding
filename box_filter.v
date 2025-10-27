@@ -17,7 +17,7 @@ module box_filter #(
     output wire [HEIGHT_BITS-1:0] oResultRow,  // 結果メモリのピクセルのY座標
     output reg oResultData,
     output reg oResultWren,  // 結果メモリの書き込み有効信号
-    input wire [2:0] global_state,  // 処理状態（1: box_filter実行中）
+    input wire processing,  // 処理状態（1: box_filter実行中）
     output reg finished,
     input wire [4:0] C  // しきい値から引く定数
 );
@@ -66,7 +66,7 @@ module box_filter #(
       oResultWren <= 0;
       finished <= 0;
     end else begin
-      if (global_state == 1) begin
+      if (processing) begin
         oResultWren <= 0;
 
         if (!finished) begin

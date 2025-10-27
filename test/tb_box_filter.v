@@ -17,7 +17,7 @@ module tb_box_filter;
   // 結果（中間）メモリとの接続
   wire [WIDTH_BITS-1:0] resultCol;
   wire [HEIGHT_BITS-1:0] resultRow;
-  wire [7:0] resultData;
+  wire resultData;
   wire resultWren;
 
   // 結果（中間）メモリからの読み出し確認用
@@ -38,7 +38,7 @@ module tb_box_filter;
       .oResultRow(resultRow),
       .oResultData(resultData),
       .oResultWren(resultWren),
-      .global_state(3'd1),
+      .processing(1'b1),
       .finished(finished),
       .C(5'd2)
   );
