@@ -117,11 +117,6 @@ module adaptive_threshold (
             state <= 2;
           end
         end
-        2: begin  // unused
-          // 状態遷移
-          ledr  <= {C, 5'b01000};
-          state <= 3;
-        end
       endcase
     end
   end
