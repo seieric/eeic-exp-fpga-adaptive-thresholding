@@ -59,7 +59,8 @@ module top (
       .oG(posg),
       .oB(posb),
       .LEDR(LEDR),
-      .SW(SW)
+      .SW(SW),
+      .cycle_count(cycle_count)
   );
 
   display_7seg display_7seg_inst (
