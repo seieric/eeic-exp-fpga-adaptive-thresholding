@@ -14,8 +14,8 @@ module adaptive_threshold (
   parameter HEIGHT_BITS = 8;
   parameter WIDTH = 2 ** WIDTH_BITS;
   parameter HEIGHT = 2 ** HEIGHT_BITS;
-  parameter NUM_PARALLEL_BITS = 1;
-  parameter NUM_PARALLEL = 1;
+  parameter NUM_PARALLEL_BITS = 3;
+  parameter NUM_PARALLEL = 2 ** NUM_PARALLEL_BITS;
 
   // 画像メモリアクセス用の信号
   wire [WIDTH_BITS-1:0] imageCol[NUM_PARALLEL];
@@ -41,7 +41,14 @@ module adaptive_threshold (
 
   // 書き込み有効かどうかで出力を切り替える
   wire [NUM_PARALLEL_BITS-1:0] output_index;
-  assign output_index = resultWren[0];
+  assign output_index = resultWren[0] ? 3'd0 :
+                        resultWren[1] ? 3'd1 :
+                        resultWren[2] ? 3'd2 :
+                        resultWren[3] ? 3'd3 :
+                        resultWren[4] ? 3'd4 :
+                        resultWren[5] ? 3'd5 :
+                        resultWren[6] ? 3'd6 :
+                        resultWren[7] ? 3'd7 : 3'd0;
 
   assign oX = resultRow[output_index];
   assign oY = resultCol[output_index];
