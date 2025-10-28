@@ -32,7 +32,7 @@ module middle_ram_controller (
   assign wraddress = (iWrrow << WIDTH_BITS) + iWrcol;
 
   // メモリからデータを読み込む
-  middle_ram middle_ram0 (
+  middle_ram64k middle_ram0 (
       .clock(clock),
       .data(iWrdata),
       .wraddress(wraddress),

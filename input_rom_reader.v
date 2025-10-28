@@ -21,7 +21,7 @@ module input_rom_reader (
   assign address = (iRow << WIDTH_BITS) + iCol;
 
   // メモリからデータを読み込む
-  input_rom rom (
+  input_rom64k rom (
       .clock(clock),
       .address(address),
       .q(mem_data)
